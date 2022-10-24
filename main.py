@@ -2,7 +2,9 @@ from copyreg import pickle
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
 import pickle
+from googletrans import Translator
 stemmer = LancasterStemmer()
+translator = Translator()
 
 
 import numpy
@@ -101,16 +103,19 @@ def chat():
         inp = input("You: ")
         if inp.lower() == "quit":
             break
-
-        result = model.predict([bag_of_words(inp, words)])
+        response = translator.translate(inp, dest="en")
+        result = model.predict([bag_of_words(response.text, words)])[0]
         result_index = numpy.argmax(result)
         tag = labels[result_index]
-        
-        for tg in data["intents"]:
-            if tg['tag'] == tag:
-                responses = tg['responses']
-        
-        print(random.choice(responses))
+
+        if result[result_index] > 0.7:
+            for tg in data["intents"]:
+                if tg['tag'] == tag:
+                    responses = tg['responses']
+            
+            print(random.choice(responses))
+        else:
+            print("Sorry I didnt get that")
 
 chat()
 
