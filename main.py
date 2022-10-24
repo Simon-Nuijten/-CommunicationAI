@@ -3,6 +3,8 @@ import nltk
 from nltk.stem.lancaster import LancasterStemmer
 import pickle
 from googletrans import Translator
+from langdetect import detect
+
 stemmer = LancasterStemmer()
 translator = Translator()
 
@@ -112,8 +114,10 @@ def chat():
             for tg in data["intents"]:
                 if tg['tag'] == tag:
                     responses = tg['responses']
-            
-            print(random.choice(responses))
+            responseGotton = random.choice(responses)
+            responseLanguage = detect(inp)
+            finalResponse = translator.translate(responseGotton, dest=responseLanguage)
+            print(finalResponse.text)
         else:
             print("Sorry I didnt get that")
 
